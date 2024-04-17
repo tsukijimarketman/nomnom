@@ -1,10 +1,22 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:nomnom/admin/admin_login.dart';
+import 'package:nomnom/widget/app_constant.dart';
+import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nomnom/pages/botnav.dart';
 import 'package:nomnom/pages/home.dart';
 import 'package:nomnom/pages/login.dart';
+import 'package:nomnom/pages/onboard.dart';
+import 'package:nomnom/pages/signup.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = publishableKey;
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
   _hideBar();
 }
@@ -40,7 +52,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LogIn(),
+      home: AdminLogin(),
     );
   }
 }
