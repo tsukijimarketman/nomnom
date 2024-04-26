@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,23 +20,38 @@ class _LogInState extends State<LogIn> {
   TextEditingController useremailController = TextEditingController();
   TextEditingController userpasswordController = TextEditingController();
 
-  userLogin()async{
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> BottomNav()));
-    }on FirebaseAuthException catch (e) {
-      if(e.code=='user-not-found'){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No user found",
-           style: TextStyle(fontSize: 18, color: Colors.black),)));
-      }
-      else if(e.code=='wrong-password'){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Wrong password",
-           style: TextStyle(fontSize: 18, color: Colors.black),)));
-      }
+  userLogin() async {
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNav()));
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'user-not-found') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "No user found",
+              style: TextStyle(fontSize: 18, color: Colors.black),
+            ),
+          ),
+        );
+      });
+    } else if (e.code == 'wrong-password') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Wrong password",
+              style: TextStyle(fontSize: 18, color: Colors.black),
+            ),
+          ),
+        );
+      });
     }
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {

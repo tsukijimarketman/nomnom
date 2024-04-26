@@ -205,7 +205,7 @@ class _WalletState extends State<Wallet> {
                     height: 20,
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       openEdit();
                     },
                     child: Container(
@@ -343,18 +343,28 @@ class _WalletState extends State<Wallet> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 20,),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black38, width: 2,), borderRadius: BorderRadius.circular(10)),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black38,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(10)),
                       child: TextField(
                         controller: amountController,
-                        decoration: InputDecoration(border: InputBorder.none, hintText: 'Enter Amount'),
+                        decoration: InputDecoration(
+                            border: InputBorder.none, hintText: 'Enter Amount'),
                       ),
                     ),
-                    SizedBox(height: 20,),
+                    SizedBox(
+                      height: 20,
+                    ),
                     GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         Navigator.pop(context);
                         makePayment(amountController.text);
                       },
@@ -364,8 +374,15 @@ class _WalletState extends State<Wallet> {
                             child: Container(
                               width: 100,
                               padding: EdgeInsets.all(5),
-                              decoration: BoxDecoration(color: Color(0xFF008080), borderRadius: BorderRadius.circular(10)),
-                            child: Center(child: Text("Pay", style: TextStyle(color: Colors.white),)),),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFF008080),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+                                  child: Text(
+                                "Pay",
+                                style: TextStyle(color: Colors.white),
+                              )),
+                            ),
                           ),
                         ],
                       ),

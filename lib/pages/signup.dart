@@ -41,6 +41,7 @@ class _SignUpState extends State<SignUp> {
           "Email": mailController.text,
           "Wallet": "0",
           "Id": Id,
+          "Password": passwordController.text,
         };
 
         await DatabaseMethods().addUserDetail(addUserInfo, Id);
@@ -48,6 +49,7 @@ class _SignUpState extends State<SignUp> {
         await SharedPreferenceHelper().saveUserEmail(mailController.text);
         await SharedPreferenceHelper().saveUserWallet('0');
         await SharedPreferenceHelper().saveUserId(Id);
+        await SharedPreferenceHelper().saveUserPassword(passwordController.text);
 
         // ignore: use_build_context_synchronously
 

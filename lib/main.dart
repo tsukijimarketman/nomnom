@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:nomnom/admin/add_food.dart';
 import 'package:nomnom/admin/admin_login.dart';
+import 'package:nomnom/admin/home_admin.dart';
 import 'package:nomnom/widget/app_constant.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +54,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: AdminLogin(),
+      home: LogIn(),
     );
   }
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
+import 'package:nomnom/admin/home_admin.dart';
 
 class AdminLogin extends StatefulWidget {
   const AdminLogin({super.key});
@@ -128,16 +131,22 @@ class _AdminLoginState extends State<AdminLogin> {
                                             }
                                             return null;
                                           },
+                                          obscureText: true,
                                         ),
                                       ),
                                     ),
                                     SizedBox(height: 40,),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(vertical: 12),
-                                      margin: EdgeInsets.symmetric(horizontal: 20),
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(10)),
-                                      child: Center(child: Text("Login", style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'Poppins'),),),
+                                    GestureDetector(
+                                      onTap: (){
+                                        LoginAdmin();
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(vertical: 12),
+                                        margin: EdgeInsets.symmetric(horizontal: 20),
+                                        width: MediaQuery.of(context).size.width,
+                                        decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(10)),
+                                        child: Center(child: Text("Login", style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'Poppins'),),),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -151,5 +160,31 @@ class _AdminLoginState extends State<AdminLogin> {
         ),
       ),
     );
+  }
+  LoginAdmin(){
+    FirebaseFirestore.instance.collection("Admin").get().then((snapshot) {
+      snapshot.docs.forEach((result) {
+        if(result.data()['id']!=userNameController.text.trim()){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Your id is not correct",
+                style: TextStyle(fontSize: 18),
+              )));
+        }
+        else if(result.data()['password']!=passwordController.text.trim()){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Colors.orangeAccent,
+              content: Text(
+                "Your password is not correct",
+                style: TextStyle(fontSize: 18),
+              )));
+        }
+        else{
+          Route route = MaterialPageRoute(builder: (context)=>HomeAdmin());
+          Navigator.pushReplacement(context, route);
+        }
+      });
+    });
   }
 }

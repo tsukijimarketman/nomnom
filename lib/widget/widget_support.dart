@@ -40,7 +40,7 @@ class AppWidget{
   static TextStyle SoftTextFieldStyle(){
      return TextStyle(
       color: Colors.black38,
-      fontSize: 15,
+      fontSize: 12,
       fontWeight: FontWeight.w500,
       fontFamily: 'Poppins'
     );
