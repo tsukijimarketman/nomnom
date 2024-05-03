@@ -1,35 +1,25 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nomnom/service/database.dart';
 import 'package:nomnom/widget/widget_support.dart';
 import 'package:random_string/random_string.dart';
 
-class AddFood extends StatefulWidget {
-  const AddFood({super.key});
+class AddBusiness extends StatefulWidget {
+  const AddBusiness({super.key});
 
   @override
-  State<AddFood> createState() => _AddFoodState();
+  State<AddBusiness> createState() => _AddBusinessState();
 }
 
-class _AddFoodState extends State<AddFood> {
-  String? value;
-  final List<String> items = [
-    'Burger',
-    'Pasta',
-    'Pizza',
-    'Chicken',
-    'Salad',
-    'Drinks'
-  ];
+class _AddBusinessState extends State<AddBusiness> {
 
   TextEditingController nameController = new TextEditingController();
-  TextEditingController priceController = new TextEditingController();
   TextEditingController detailController = new TextEditingController();
+  TextEditingController businessEmail = new TextEditingController();
+  TextEditingController businessPassword = new TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
@@ -42,11 +32,12 @@ class _AddFoodState extends State<AddFood> {
   uploadItem() async {
     if (selectedImage != null &&
         nameController.text != "" &&
-        priceController.text != "" &&
+        businessEmail.text != "" &&
+        businessPassword.text != "" &&
         detailController != "") {
       String addId = randomAlphaNumeric(10);
       Reference firebaseStorageReference =
-          FirebaseStorage.instance.ref().child("blogImages").child(addId);
+          FirebaseStorage.instance.ref().child("BusinessesImage").child(addId);
       final UploadTask task = firebaseStorageReference.putFile(selectedImage!);
 
       var downloadUrl = await (await task).ref.getDownloadURL();
@@ -54,20 +45,22 @@ class _AddFoodState extends State<AddFood> {
       Map<String, dynamic> addItem = {
         "Image":downloadUrl,
         "Name": nameController.text,
-        "Price": priceController.text,
         "Detail": detailController.text,
+        "Email": businessEmail.text,
+        "Password": businessPassword.text,
       };
 
-      await DatabaseMethods().addFoodIem(addItem, value!, nameController.text).then((value){
+      await DatabaseMethods().addBusiness(addItem, nameController.text).then((value){
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Colors.orangeAccent,
               content: Text(
-                "Food Item has been added Succesfully",
+                "Business has been added successfully",
                 style: TextStyle(fontSize: 18),
               )));
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +68,7 @@ class _AddFoodState extends State<AddFood> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          "Add Item",
+          "Add Business",
           style: AppWidget.HeadlineTextFieldStyle(),
         ),
         leading: GestureDetector(
@@ -94,7 +87,7 @@ class _AddFoodState extends State<AddFood> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Upload the Item Picture",
+                "Upload the Business Logo",
                 style: AppWidget.semiboldTextFieldStyle(),
               ),
               SizedBox(
@@ -149,7 +142,7 @@ class _AddFoodState extends State<AddFood> {
                 height: 20,
               ),
               Text(
-                "Item Name",
+                "Store Name",
                 style: AppWidget.semiboldTextFieldStyle(),
               ),
               SizedBox(
@@ -165,7 +158,7 @@ class _AddFoodState extends State<AddFood> {
                   controller: nameController,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Enter the item name",
+                      hintText: "Enter the Store name",
                       hintStyle: AppWidget.SoftTextFieldStyle()),
                 ),
               ),
@@ -173,31 +166,7 @@ class _AddFoodState extends State<AddFood> {
                 height: 20,
               ),
               Text(
-                "Item Price",
-                style: AppWidget.semiboldTextFieldStyle(),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    color: Color(0xFFececf8),
-                    borderRadius: BorderRadius.circular(10)),
-                child: TextField(
-                  controller: priceController,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Enter the item price",
-                      hintStyle: AppWidget.SoftTextFieldStyle()),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Item Detail",
+                "Store Detail",
                 style: AppWidget.semiboldTextFieldStyle(),
               ),
               SizedBox(
@@ -214,7 +183,7 @@ class _AddFoodState extends State<AddFood> {
                   maxLines: 6,
                   decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Enter the item detail",
+                      hintText: "Enter the Store detail",
                       hintStyle: AppWidget.SoftTextFieldStyle()),
                 ),
               ),
@@ -222,50 +191,49 @@ class _AddFoodState extends State<AddFood> {
                 height: 20,
               ),
               Text(
-                "Item Category",
+                "Enter Business Email",
                 style: AppWidget.semiboldTextFieldStyle(),
               ),
               SizedBox(
                 height: 10,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                     color: Color(0xFFececf8),
                     borderRadius: BorderRadius.circular(10)),
-                width: MediaQuery.of(context).size.width,
-                child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                  items: items
-                      .map((item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontFamily: 'Poppins'),
-                          )))
-                      .toList(),
-                  onChanged: ((value) => setState(() {
-                        this.value = value;
-                      })),
-                  dropdownColor: Colors.white,
-                  hint: Text(
-                    "Select Category",
-                    style: AppWidget.SoftTextFieldStyle(),
-                  ),
-                  iconSize: 36,
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: Colors.black,
-                  ),
-                  value: value,
-                )),
+                child: TextField(
+                  controller: businessEmail,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Enter the email",
+                      hintStyle: AppWidget.SoftTextFieldStyle()),
+                ),
+              ),
+              SizedBox(height: 20,),
+              Text(
+                "Enter Business Password",
+                style: AppWidget.semiboldTextFieldStyle(),
               ),
               SizedBox(
-                height: 20,
+                height: 10,
               ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                    color: Color(0xFFececf8),
+                    borderRadius: BorderRadius.circular(10)),
+                child: TextField(
+                  controller: businessPassword,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Enter the password",
+                      hintStyle: AppWidget.SoftTextFieldStyle()),
+                ),
+              ),
+              SizedBox(height: 20,),
               GestureDetector(
                   onTap: () {
                     uploadItem();
@@ -276,12 +244,12 @@ class _AddFoodState extends State<AddFood> {
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.redAccent),
                     child: Center(
-                        child: Text("Add",
+                        child: Text("Add Business",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Poppins',
                                 fontSize: 20))),
-                  ))
+                  )),
             ],
           ),
         ),

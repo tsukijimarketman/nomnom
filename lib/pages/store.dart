@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:nomnom/pages/businessdetail.dart';
 import 'package:nomnom/pages/details.dart';
 import 'package:nomnom/service/database.dart';
 import 'package:nomnom/service/shared_pref.dart';
@@ -41,23 +40,16 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
-  Stream? BusinessStream;
-  onTheLoadBusiness() async {
-    BusinessStream = await DatabaseMethods().getFoodItem("Businesses");
-    setState(() {});
-  }
-
   @override
   void initState() {
     onTheLoad();
     onThisLoad();
-    onTheLoadBusiness();
     super.initState();
   }
 
   Widget allItems() {
     return StreamBuilder(
-        stream: BusinessStream,
+        stream: foodItemStream,
         builder: (context, AsyncSnapshot snapshot) {
           return snapshot.hasData
               ? ListView.builder(
@@ -72,7 +64,7 @@ class _HomeState extends State<Home> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => BusinessDetail(detail: ds["Detail"], image: ds["Image"], email: ds["Email"], name: ds["Name"], password: ds["Password"],)
+                              builder: (context) => Details(detail: ds["Detail"], image: ds["Image"], price: ds["Price"], name: ds["Name"],)
                             ));
                       },
                       child: Container(
@@ -113,6 +105,10 @@ class _HomeState extends State<Home> {
                                           ds["Detail"],
                                           style: AppWidget.SoftTextFieldStyle(),
                                         ),
+                                        Text(
+                                          '₱${ds["Price"]}',
+                                          style: AppWidget.PHP(),
+                                        )
                                       ]),
                                 ),
                               ],

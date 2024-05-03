@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:nomnom/service/database.dart';
 import 'package:nomnom/service/shared_pref.dart';
 import 'package:nomnom/widget/widget_support.dart';
@@ -18,22 +19,73 @@ class Order extends StatefulWidget {
 class _OrderState extends State<Order> {
   Stream? foodStream;
   String? id, wallet;
-  int total = 0, amount2 = 0;
+  int total = 0, amount2 = 0, totalAmount = 0;
 
-  Future<void> deleteCartCollection(String userId) async {
-  CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-  DocumentReference userDoc = userCollection.doc(userId);
-  CollectionReference cartCollection = userDoc.collection('Cart');
+//access the baranggay, city, detail
+  Future<void> printAddressDetails(String userId) async {
+  // Reference to the user's address collection
+  CollectionReference addressCollection = FirebaseFirestore.instance.collection('users').doc(userId).collection('Address');
 
-  // Get all documents in the "Cart" collection
-  QuerySnapshot snapshot = await cartCollection.get();
+  // Get data from the user's address collection
+  QuerySnapshot addressSnapshot = await addressCollection.get();
 
-  // Delete each document in the "Cart" collection
-  for (DocumentSnapshot doc in snapshot.docs) {
-    await doc.reference.delete();
+  // Iterate through the documents in the address collection
+  for (QueryDocumentSnapshot addressDoc in addressSnapshot.docs) {
+    // Get the Baranggay, City, and Detail fields from the document data
+    String barangay = addressDoc.get('Barangay');
+    String city = addressDoc.get('City');
+    String detail = addressDoc.get('Detail');
+
+    // Print the address details
+    print('Barangay: $barangay, City: $city, Detail: $detail');
+  }
+}
+
+  Future<void> copyDataFromCollectionToAnother(String id) async {
+    // Reference to the source collection
+    CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('users');
+    DocumentReference userDoc = userCollection.doc(id);
+    CollectionReference userAddressCollection = userDoc.collection("Address");
+
+    // Reference to the destination collection
+    CollectionReference destinationCollection =
+        FirebaseFirestore.instance.collection('orders');
+
+    // Get data from the users collection
+    DocumentSnapshot userSnapshot = await userDoc.get();
+    Map<String, dynamic> userData = userSnapshot.data() as Map<String, dynamic>;
+
+    // Get data from the user's address collection
+    QuerySnapshot addressSnapshot = await userAddressCollection.get();
+    List<Map<String, dynamic>> addresses = addressSnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+
+    // Combine the data into a single document
+    Map<String, dynamic> mergedData = {
+      ...userData,
+      'addresses': addresses,
+    };
+
+    // Add the merged data to the destination collection as a single document
+    await destinationCollection.add(mergedData);
   }
 
-}
+  Future<void> deleteCartCollection(String userId) async {
+    CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('users');
+    DocumentReference userDoc = userCollection.doc(userId);
+    CollectionReference cartCollection = userDoc.collection('Cart');
+
+    // Get all documents in the "Cart" collection
+    QuerySnapshot snapshot = await cartCollection.get();
+
+    // Delete each document in the "Cart" collection
+    for (DocumentSnapshot doc in snapshot.docs) {
+      await doc.reference.delete();
+    }
+  }
 
   void startTimer() {
     Timer(Duration(seconds: 1), () {
@@ -202,13 +254,22 @@ class _OrderState extends State<Order> {
                           TextButton(
                             onPressed: () async {
                               int amount = int.parse(wallet!) - amount2;
-                              print(amount);
                               await DatabaseMethods()
                                   .updateUserWallet(id!, amount.toString());
                               await SharedPreferenceHelper()
                                   .saveUserWallet(amount.toString());
                               Navigator.of(context).pop();
-                              deleteCartCollection(id!);
+                              await copyDataFromCollectionToAnother(id!);
+                              totalAmount = amount2;
+                              Map<String, dynamic> updatedUserInfo = {
+                                'Total Price':
+                                    totalAmount, // Add the new field here
+                                // Add other updated fields as needed
+                              };
+                              await DatabaseMethods()
+                                  .updateUserDetail(updatedUserInfo, id!);
+                              //await printAddressDetails(id!);
+                              await deleteCartCollection(id!);
                               setState(() {
                                 total = 0;
                               });

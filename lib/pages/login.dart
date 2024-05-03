@@ -15,6 +15,8 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final _formkey = GlobalKey<FormState>();
   String email='', password='';
   TextEditingController useremailController = TextEditingController();

@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nomnom/pages/address.dart';
 import 'package:nomnom/pages/login.dart';
 import 'package:nomnom/service/auth.dart';
 import 'package:nomnom/service/shared_pref.dart';
@@ -18,7 +20,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  String? profile, name, email;
+  String? profile, name, email, address;
 
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
@@ -233,6 +235,49 @@ class _ProfileState extends State<Profile> {
                   SizedBox(
                     height: 20,
                   ),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Address()));
+                    },
+                    child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        child: Material(
+                          borderRadius: BorderRadius.circular(10),
+                          elevation: 2,
+                          child: Container(
+                            padding:
+                                EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.location_city,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Address",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: 'Poppins'),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ),
+                    SizedBox(height:20),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     child: Material(
