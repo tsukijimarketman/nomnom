@@ -1,22 +1,22 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nomnom/service/database.dart';
 import 'package:nomnom/widget/widget_support.dart';
 import 'package:random_string/random_string.dart';
 
-class AddFood extends StatefulWidget {
-  const AddFood({super.key});
+class EditDetails extends StatefulWidget {
+  final String? selectedDocument, valued;
+  const EditDetails({Key? key, this.selectedDocument, this.valued}) : super(key: key);
 
   @override
-  State<AddFood> createState() => _AddFoodState();
+  State<EditDetails> createState() => _EditDetailsState();
 }
 
-class _AddFoodState extends State<AddFood> {
+class _EditDetailsState extends State<EditDetails> {
+  String? name;
   String? value;
   final List<String> items = [
     'Burger',
@@ -30,7 +30,6 @@ class _AddFoodState extends State<AddFood> {
   TextEditingController nameController = new TextEditingController();
   TextEditingController priceController = new TextEditingController();
   TextEditingController detailController = new TextEditingController();
-  TextEditingController BusinessProduct = new TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
   File? selectedImage;
@@ -41,10 +40,13 @@ class _AddFoodState extends State<AddFood> {
   }
 
   uploadItem() async {
-    if (selectedImage != null &&
-        nameController.text != "" &&
-        priceController.text != "" &&
-        detailController != "") {
+  if (selectedImage != null &&
+      nameController.text != "" &&
+      priceController.text != "" &&
+      detailController.text != "" && // Fixed condition: detailController.text != "" instead of detailController != ""
+      value != null) { // Ensure that a category is selected
+
+    try {
       String addId = randomAlphaNumeric(10);
       Reference firebaseStorageReference =
           FirebaseStorage.instance.ref().child("blogImages").child(addId);
@@ -52,24 +54,57 @@ class _AddFoodState extends State<AddFood> {
 
       var downloadUrl = await (await task).ref.getDownloadURL();
 
-      Map<String, dynamic> addItem = {
-        "Image":downloadUrl,
+      Map<String, dynamic> updatedItem = {
+        "Image": downloadUrl,
         "Name": nameController.text,
         "Price": priceController.text,
         "Detail": detailController.text,
-        "Business":BusinessProduct.text
       };
 
-      await DatabaseMethods().addFoodIem(addItem, value!, nameController.text).then((value){
+      // Check if the item is being added or updated
+      if (value != null && nameController.text.isNotEmpty) {
+        // Update the item
+        await DatabaseMethods().updateFoodItem(updatedItem, widget.selectedDocument!, widget.valued!);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Food Item has been added Succesfully",
-                style: TextStyle(fontSize: 18),
-              )));
-      });
+          backgroundColor: Colors.orangeAccent,
+          content: Text(
+            "Food Item has been updated successfully",
+            style: TextStyle(fontSize: 18),
+          ),
+        ));
+      } else {
+        // Add the new item
+        await DatabaseMethods().addFoodIem(updatedItem, value!, nameController.text);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.orangeAccent,
+          content: Text(
+            "Food Item has been added successfully",
+            style: TextStyle(fontSize: 18),
+          ),
+        ));
+      }
+    } catch (e) {
+      print("Error uploading item: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.redAccent,
+        content: Text(
+          "Error uploading item. Please try again.",
+          style: TextStyle(fontSize: 18),
+        ),
+      ));
     }
+  } else {
+    // Show a message if any required field is empty
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: Colors.redAccent,
+      content: Text(
+        "Please fill in all the fields.",
+        style: TextStyle(fontSize: 18),
+      ),
+    ));
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +112,7 @@ class _AddFoodState extends State<AddFood> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          "Add Item",
+          "Update Item",
           style: AppWidget.HeadlineTextFieldStyle(),
         ),
         leading: GestureDetector(
@@ -224,30 +259,6 @@ class _AddFoodState extends State<AddFood> {
                 height: 20,
               ),
               Text(
-                "Unique Food Item for",
-                style: AppWidget.semiboldTextFieldStyle(),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    color: Color(0xFFececf8),
-                    borderRadius: BorderRadius.circular(10)),
-                child: TextField(
-                  controller: BusinessProduct,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Please enter ALL CAPITAL LETTERS",
-                      hintStyle: AppWidget.SoftTextFieldStyle()),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
                 "Item Category",
                 style: AppWidget.semiboldTextFieldStyle(),
               ),
@@ -302,7 +313,7 @@ class _AddFoodState extends State<AddFood> {
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.redAccent),
                     child: Center(
-                        child: Text("Add",
+                        child: Text("Update",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Poppins',

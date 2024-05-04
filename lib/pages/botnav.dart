@@ -6,7 +6,8 @@ import 'package:nomnom/pages/profile.dart';
 import 'package:nomnom/pages/wallet.dart';
 
 class BottomNav extends StatefulWidget {
-  const BottomNav({super.key});
+  final String email;
+  const BottomNav({super.key, required this.email});
 
   @override
   State<BottomNav> createState() => _BottomNavState();

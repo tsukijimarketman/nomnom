@@ -4,6 +4,7 @@ import 'package:nomnom/admin/add_food.dart';
 import 'package:nomnom/admin/admin_login.dart';
 import 'package:nomnom/admin/home_admin.dart';
 import 'package:nomnom/business/business.dart';
+import 'package:nomnom/pages/businessdetail.dart';
 import 'package:nomnom/pages/splashscreen.dart';
 import 'package:nomnom/rider/rider.dart';
 import 'package:nomnom/rider/rider_dashboard.dart';
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: BusinessLogin(), //Splash
+      home: SignUp(), //Splash
     );
   }
 }

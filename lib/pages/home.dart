@@ -267,6 +267,20 @@ class _HomeState extends State<Home> {
                 height: 30,
               ),
               Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                        "Food Businesses",
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold),
+                      ),
+              ),
+                    SizedBox(
+                      height: 5,
+                    ),
+              Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Container(height: 280, child: allItems()),
               ),

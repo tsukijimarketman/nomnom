@@ -7,6 +7,10 @@ class AuthMethods{
     return await auth.currentUser;
   }
 
+  getCurrentUserEmail()async{
+    return await auth.currentUser!.email;
+  }
+
   Future SignOut()async{
     await FirebaseAuth .instance.signOut();
   }

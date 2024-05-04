@@ -54,7 +54,7 @@ class _SignUpState extends State<SignUp> {
         // ignore: use_build_context_synchronously
 
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: ((context) => BottomNav())));
+            context, MaterialPageRoute(builder: ((context) => BottomNav(email: mailController.toString(),))));
       } on FirebaseException catch (e) {
         if (e.code == 'weak-password') {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -163,30 +163,42 @@ class _BusinessLoginState extends State<BusinessLogin> {
       ),
     );
   }
-  LoginAdmin(){
-    FirebaseFirestore.instance.collection("Businesses").get().then((snapshot) {
-      snapshot.docs.forEach((result) {
-        if(result.data()['id']!=userNameController.text.trim()){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Your id is not correct",
-                style: TextStyle(fontSize: 18),
-              )));
+  LoginAdmin() {
+  FirebaseFirestore.instance.collection("Businesses").get().then((snapshot) {
+    bool emailFound = false;
+    bool passwordCorrect = false;
+
+    snapshot.docs.forEach((result) {
+      if (result.data()['Email'].toLowerCase() ==
+          userNameController.text.trim().toLowerCase()) {
+        emailFound = true;
+
+        if (result.data()['Password'] == passwordController.text.trim()) {
+          passwordCorrect = true;
         }
-        else if(result.data()['password']!=passwordController.text.trim()){
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              backgroundColor: Colors.orangeAccent,
-              content: Text(
-                "Your password is not correct",
-                style: TextStyle(fontSize: 18),
-              )));
-        }
-        else{
-          Route route = MaterialPageRoute(builder: (context)=>BusinessDashboard());
-          Navigator.pushReplacement(context, route);
-        }
-      });
+      }
     });
-  }
+
+    if (!emailFound) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.orangeAccent,
+        content: Text(
+          "Your email is not correct",
+          style: TextStyle(fontSize: 18),
+        ),
+      ));
+    } else if (!passwordCorrect) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.orangeAccent,
+        content: Text(
+          "Your password is not correct",
+          style: TextStyle(fontSize: 18),
+        ),
+      ));
+    } else {
+      Route route = MaterialPageRoute(builder: (context) => BusinessDashboard());
+      Navigator.pushReplacement(context, route);
+    }
+  });
+}
 }

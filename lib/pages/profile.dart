@@ -53,6 +53,13 @@ class _ProfileState extends State<Profile> {
     setState(() {});
   }
 
+  void logout() async {
+                        await AuthMethods().SignOut();
+                        await SharedPreferenceHelper().clearSharedPreferences();
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (context) => LogIn()));
+                      }
+
   onThisLoad() async {
     await getTheSharedPreferences();
     setState(() {});
@@ -236,48 +243,49 @@ class _ProfileState extends State<Profile> {
                     height: 20,
                   ),
                   GestureDetector(
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Address()));
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Address()));
                     },
                     child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20),
-                        child: Material(
-                          borderRadius: BorderRadius.circular(10),
-                          elevation: 2,
-                          child: Container(
-                            padding:
-                                EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.location_city,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Address",
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 18,
-                                          fontFamily: 'Poppins'),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(10),
+                        elevation: 2,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_city,
+                                color: Colors.black,
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Address",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 18,
+                                        fontFamily: 'Poppins'),
+                                  )
+                                ],
+                              )
+                            ],
                           ),
                         ),
                       ),
+                    ),
                   ),
-                    SizedBox(height:20),
+                  SizedBox(height: 20),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 20),
                     child: Material(
@@ -319,8 +327,10 @@ class _ProfileState extends State<Profile> {
                     height: 20,
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       AuthMethods().DeleteUser();
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => LogIn()));
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -328,8 +338,8 @@ class _ProfileState extends State<Profile> {
                         borderRadius: BorderRadius.circular(10),
                         elevation: 2,
                         child: Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 10),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10)),
@@ -364,9 +374,8 @@ class _ProfileState extends State<Profile> {
                     height: 20,
                   ),
                   GestureDetector(
-                    onTap: (){
-                      AuthMethods().SignOut();
-                       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>LogIn()));
+                    onTap: () {
+                      logout();
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 20),
@@ -374,8 +383,8 @@ class _ProfileState extends State<Profile> {
                         borderRadius: BorderRadius.circular(10),
                         elevation: 2,
                         child: Container(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 10),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10)),
